@@ -1,0 +1,64 @@
+﻿@page "/arithmeticpage"
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@using Arithmetic
+@using Grpc.Net.Client
+
+<h1>초간단 계산기</h1>
+
+<input type="text" @bind="@First" />
+<input type="text" @bind="@Second" />
+<input type="button" value="더하기" @onclick="@AddAsync" />
+<input type="button" value="빼기기" @onclick="@SubtractAsync" />
+
+<hr />
+<div>
+    <span>@result</span>
+</div>
+
+@code {
+    private int result = 0;
+    public int First { get; set; } = 3;
+    public int Second { get; set; } = 5;
+
+    protected override async Task OnInitAsync()
+    {
+        var request = new RequestMessage() { First = First, Second = Second };
+
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost:50051");
+
+        var arithmeticClient = GrpcClient.Create<ArithmeticService.ArithmeticServiceClient>(httpClient);
+        var arithmetic = await arithmeticClient.AddAsync(request);
+        result = arithmetic.Result;
+    }
+
+    protected async Task AddAsync()
+    {
+        var request = new RequestMessage() { First = First, Second = Second };
+
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost:50051");
+
+        var arithmeticClient = GrpcClient.Create<ArithmeticService.ArithmeticServiceClient>(httpClient);
+        var arithmetic = await arithmeticClient.AddAsync(request);
+        result = arithmetic.Result;
+    }
+
+    protected async Task SubtractAsync()
+    {
+        var request = new RequestMessage() { First = First, Second = Second };
+
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost:50051");
+
+        var arithmeticClient = GrpcClient.Create<ArithmeticService.ArithmeticServiceClient>(httpClient);
+        var arithmetic = await arithmeticClient.SubstractAsync(request);
+        result = arithmetic.Result;
+    }
+}
